@@ -1,0 +1,32 @@
+CS5200 Final Deliverables Cheat Sheet (use to craft your own report/presentation)
+
+Final report (lastname_final_report.pdf)
+- README/build/run: Postgres requirement, DATABASE_URL env, load chen_final_project.sql, run CLI (python -m app.cli) and GUI (python -m app.gui), mention helper scripts (scripts/reset_db.ps1, scripts/smoke.ps1, scripts/reset_and_test.ps1).
+- Technical specs: Python + psycopg2, PostgreSQL backend, Tkinter GUI and CLI, OS is Windows 10 but cross-platform, ERDPlus/DBeaver for modeling.
+- ERD/logical model: entities (teams, players, tournaments, maps, matches, tournament_results, team_roster, map_pool_history); relationships with PK/FK; note trigger enforce_active_roster_limit and function validate_and_insert_match + team_summary; ON DELETE/UPDATE choices (matches RESTRICT team FKs, tournaments/maps/results/roster cascade, players SET NULL).
+- User flow: start app, connect via env DATABASE_URL, CLI menus 1–8 with back/exit; GUI tabs (Teams, Players, Tournaments, Matches, Results, Queries) with Refresh/Create/Update/Delete and sortable columns; interesting queries tab with four analysis queries.
+- Lessons learned: Postgres role/pg_hba fix, keeping validation server-side, menu ergonomics, Tkinter quirks (sorting, entry parsing), time management around seed data.
+- Future work: richer roster history, map veto/series scores, auth/multiuser, export to CSV, more analytics/visuals.
+- Known issues: GUI relies on DB validation for matches; minimal styling; assumes DB available locally.
+
+5-minute video or live demo outline
+- Intro (20–30s): domain (CS2 esports), stack (Postgres + Python CLI/GUI).
+- Schema tour (60–90s): walk through ERD and key constraints, mention trigger + functions + indexes.
+- CRUD demos (2–3 min): show DB table in DBeaver, then in app create/update/delete two different entities (e.g., create team, update player, delete roster entry), and list/read views; for match creation, call validator path to show error handling if possible.
+- Analysis queries (30–45s): run one or two interesting queries (earnings by team, team_summary server fn).
+- Wrap (20–30s): lessons learned + future work.
+
+Submission packaging checklist
+- Dump file: chen_final_project.sql (already correct naming). If you change schema, refresh dump.
+- Code zip: Chen_project.zip (or lastname_project.zip) containing app/, scripts/, README.md, requirements.txt, chen_final_project.sql.
+- Report: Chen_final_report.pdf with sections above and embedded ERD + user flow diagram.
+- Video: MP4 named Chen_final_presentation.mp4 (or note live presentation slot).
+
+Diagrams to produce
+- ERD matching current schema (include map_pool_history and team_roster; highlight trigger/function notes).
+- User flow diagram showing CLI path and GUI tabs.
+
+Demo environment tips
+- Set DATABASE_URL=postgresql://kevin:808080@127.0.0.1:5432/cs2_esports (or your own) before running.
+- Use scripts/reset_and_test.ps1 to reload seed + smoke test before filming.
+- In DBeaver, keep tables open to show before/after CRUD state quickly.

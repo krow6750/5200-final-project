@@ -1,0 +1,14 @@
+Context so far
+- Read assignment brief (cs5200f25project.pdf) and proposal (Project Proposal Kevin Chen.pdf) to confirm scope: Postgres, CRUD app, ERD/report/presentation.
+- Reviewed current assets: schema dump (chen_final_project.sql) with teams/players/tournaments/maps/map_pool_history/matches/tournament_results/team_roster + trigger for 5 active players; seed data and indexes. Python helpers (app/db.py, app/db_check.py), basic README, requirements.
+
+Latest updates (code/app side)
+- GUI polish: sortable column headers show ^/v indicators; update actions warn on blank updates; dropdowns for FK fields (teams/tournaments/maps) to avoid typing IDs; status bar for inline feedback; forms prefill on row select; update/delete disabled until a row is selected; clear-form buttons added. Applies across Teams/Players/Tournaments/Matches/Results.
+- App UX: match/results comboboxes reduce user error; inline status messages reduce popup noise; match validator still enforces scores/winner consistency on create.
+- Notes storage: detailed presentation/report talking points live in deliverable_script_notes.txt (keep that file for future edits).
+
+Outstanding deliverables
+- Final report PDF (build/run, tech specs, ERD/logical model, user flow, lessons learned/future work, known issues).
+- 5-minute demo video or live presentation script (CRUD before/after + schema/architecture + queries).
+- Package code zip (lastname_project.zip) and ensure schema dump (chen_final_project.sql) and docs included.
+- Capture ERD/user flow diagrams matching current schema and GUI flow.

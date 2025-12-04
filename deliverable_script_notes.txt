@@ -1,0 +1,62 @@
+Talking Points / Script Notes (edit me before presenting)
+
+Project purpose and scope
+- Built a relational DB for Counter-Strike 2 esports: tracks teams, players, tournaments, matches, map pool history, rosters, and tournament results.
+- Goal: showcase full CRUD, server-side constraints/functions, and a small Python front end (CLI + Tkinter GUI) backed by PostgreSQL.
+- Represents a snapshot of the pro scene with seeded data; designed for easy demos and analysis queries (earnings, wins by map, roster sizes, team summary).
+
+Stack and architecture
+- Backend: PostgreSQL. Chosen for strong FK/constraint support and easy joins/aggregations.
+- Schema: 7 core tables + roster and map_pool_history; constraints for validity (dates, winner matches teams, non-empty names); trigger to cap active roster at 5; server functions `validate_and_insert_match` (enforce match rules) and `team_summary` (aggregated view).
+- Python app: shared DB helpers (`app/db.py`), CLI (`app/cli.py`), GUI (`app/gui.py`), smoke test (`app/smoke_test.py`), connectivity check (`app/db_check.py`).
+- Scripts: PowerShell helpers to reset DB and run smoke tests.
+
+Key design decisions (explain intent)
+- Postgres over NoSQL: structured, relational data with many joins and strict integrity needs.
+- Server-side validation: match inserts go through `validate_and_insert_match` to keep winner/scores consistent; roster trigger enforces max 5 active players to guard against client mistakes.
+- FK ON DELETE/UPDATE choices: matches keep teams via RESTRICT to preserve history; tournaments/maps cascade to dependent data; players SET NULL on team delete (keeps player history); roster cascades.
+- Indexes added where queries hit repeatedly (players by team, matches by tournament/map, results by tournament, roster lookup); justified inline in SQL.
+- GUI/CLI reuse the same DB helper layer to avoid duplicated SQL and keep logic in one place.
+
+How it was built (workflow)
+- Started from proposal ERD (teams/players/tournaments/matches/maps/results) and expanded with roster and map_pool_history to cover realistic CS2 needs.
+- Implemented schema in Postgres with constraints, trigger, functions; seeded sample data for 6 tournaments, multiple teams/players/matches/results.
+- Added Python DB helper wrapper for fetch/execute with safe commit/rollback.
+- Built CLI menus for full CRUD + interesting queries; wired match creation to server validator.
+- Added Tkinter GUI tabs mirroring CRUD + queries; added sort arrows, dropdowns for FKs, status bar, prefills, and clear-form buttons for a smoother demo.
+- Created smoke test to prove CRUD end-to-end; PowerShell scripts to reset DB and run tests quickly.
+
+What the app does (demo script)
+- Connects via `DATABASE_URL` (defaults to local Postgres); tables seeded for immediate use.
+- CLI: main menu with Teams/Players/Tournaments/Maps/Matches/Results/Roster/Interesting Queries; full CRUD flows and analysis queries.
+- GUI: tabs for same entities; sortable columns, dropdowns for FK selection, inline status messages; Query tab runs earnings by team, wins by map, roster counts, team_summary.
+- Show match creation through validator to demonstrate error handling if inputs conflict.
+
+Interesting queries / analysis
+- Earnings by team (tournament_results aggregate).
+- Wins by map (matches joined to maps).
+- Active roster counts (filter by active flag).
+- team_summary() (server function combining matches played, wins, earnings).
+
+Testing and reliability
+- `python -m app.smoke_test` creates/updates/deletes fixtures then cleans up.
+- `python -m app.db_check` prints table counts and sample matches.
+- Scripts to reset DB and rerun smoke test ensure demo stays clean.
+
+Lessons learned / rationale to mention
+- Keeping validation in the DB simplified clients and prevented inconsistent match data.
+- Simple indexes improved common list/lookup queries.
+- Tkinter needed manual sort and UX tweaks (status bar, dropdowns) for a friendly demo without heavy frameworks.
+- Dealing with Postgres role/pg_hba setup was an early blocker; resolved by aligning user/password and restarting service.
+
+Future work ideas (if asked)
+- Add map veto/series detail, richer roster history (substitutions, contracts).
+- Add filters/search in GUI, date pickers, export to CSV.
+- Authentication/roles for admin vs viewer.
+
+Demo flow (5 min)
+- Intro: domain + stack (15–20s).
+- Schema overview: ERD highlights, constraints, trigger/function, FK choices (60–90s).
+- CRUD demo: create/update/delete two entities (e.g., team, player, match via validator) showing before/after in GUI or DBeaver (2–3 min).
+- Queries: run one or two interesting queries (30–45s).
+- Wrap with lessons learned + future work (20–30s).

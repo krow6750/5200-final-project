@@ -16,6 +16,7 @@ def get_database_url() -> str:
 
 @contextmanager
 def get_conn() -> Iterable[PGConnection]:
+    # Tiny wrapper so every call auto-commits/rolls back; keeps the app code uncluttered.
     conn = psycopg2.connect(get_database_url())
     conn.autocommit = False
     try:
@@ -39,3 +40,18 @@ def execute(query: str, params: Optional[Sequence[Any]] = None) -> None:
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(query, params or ())
+
+
+def fetch_one(query: str, params: Optional[Sequence[Any]] = None) -> Optional[Tuple]:
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            return cur.fetchone()
+
+
+def execute_returning(query: str, params: Optional[Sequence[Any]] = None) -> Optional[Any]:
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            row = cur.fetchone()
+            return row[0] if row else None
